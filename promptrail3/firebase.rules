@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Community quick prompts (Fast)
+    match /communityQuickPrompts/{document} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // Community templates (workflow/picture/shared text)
+    match /communityTemplates/{document} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // User-specific templates
+    match /userTemplates/{userId}/templates/{document} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Workflow likes, quick prompt likes, etc. (general fallback)
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
